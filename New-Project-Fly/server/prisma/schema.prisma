@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
+  phone    String    @unique
+  userType UserType
+  employee Employee?
+  vendor   Vendor?
+  admin    Admin?
+  otps     Otp[]     @relation("UserOtps")
+}
+
+model Employee {
+  userId             Int     @unique
+  user               User    @relation(fields: [userId], references: [id])
+  employeeId         String  @unique
+  name               String
+  email              String  @unique
+  phone              String  @unique
+  department         String?
+  reportingManagerId String?
+  allocatedPerDiem   Int?
+}
+
+model Vendor {
+  id      Int     @id @default(autoincrement())
+  userId  Int     @unique
+  user    User    @relation(fields: [userId], references: [id])
+  company String
+  service String?
+}
+
+model Admin {
+  id          Int     @id @default(autoincrement())
+  userId      Int     @unique
+  user        User    @relation(fields: [userId], references: [id])
+  role        String
+  permissions String?
+}
+
+model Otp {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  otp       String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], name: "UserOtps")
+}
+
+model CabRequest {
+  id               Int        @id @default(autoincrement())
+  serviceRequestID Int
+  requestType      String
+  city             String
+  state            String
+  pickupAddress    String
+  dropAddress      String
+  dateOfTravel     DateTime
+  startTime        DateTime
+  endTime          DateTime
+  pickupTime       DateTime
+  dropTime         DateTime?
+  status           RequestStatus @default(PENDING)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  // Relationship to ServiceRequest
+  serviceRequest   ServiceRequest  @relation(fields: [serviceRequestID], references: [id])
+
+  @@index([serviceRequestID])
+}
+model Confirmation {
+  ConfirmationId               Int        @id @default(autoincrement())
+  serviceRequestID Int
+  srn              String
+  serviceType      String
+  perDiemAllowance String
+  confirmationDate String
+  //confirmedAt      DateTime?
+  //createdAt        DateTime   @default(now())
+  // updatedAt        DateTime   @updatedAt
+  serviceRequest   ServiceRequest  @relation(fields: [serviceRequestID], references: [id])
+
+  @@index([serviceRequestID])
+}
+model ServiceRequest {
+  id         Int          @id @default(autoincrement())
+  employeeID Int
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  // Relationship to Employee
+  employee   Employee      @relation(fields: [employeeID], references: [userId])
+
+  // Relationships
+  cabRequests       CabRequest[]
+  confirmations     Confirmation[]
+
+  @@index([employeeID])
+}
+
+
+enum UserType {
+  EMPLOYEE
+  VENDOR
+  ADMIN
+}
