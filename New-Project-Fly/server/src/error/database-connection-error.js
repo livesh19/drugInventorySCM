@@ -1,4 +1,6 @@
-const CustomError = require("./custom-error.js"); // Use require to import CustomError
+const CustomError = require("./custom-error.js"); 
+// Use require to import customerror
+
 
 class DataConnectionError extends CustomError {
     statusCode = 500;
