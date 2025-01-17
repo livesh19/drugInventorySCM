@@ -1,4 +1,4 @@
-**Drug Inventory and Supply Chain **
+**Drug Inventory and Supply Chain**
 
 This repository currently contains the backend code for the Drug Inventory and Supply Chain Management System. It is built using Node.js and Express.js, with Prisma ORM for database interaction and Neon as the database provider.
 and I am working with the  frontend as well 
