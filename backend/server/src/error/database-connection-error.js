@@ -16,5 +16,5 @@ class DataConnectionError extends CustomError {
     }
 }
 
-// Export the DataConnectionError class using CommonJS syntax
+// Export the DataConnectionError class using CommonJS Syntax
 module.exports = DataConnectionError;
